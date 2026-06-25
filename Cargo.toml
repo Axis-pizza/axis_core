@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    "crates/axis-core-client",
+    "crates/axis-core-test-utils",
+    "programs/axis-core",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "UNLICENSED"
+repository = "https://github.com/Axis-pizza/axis_core"
+rust-version = "1.89.0"
+
+[workspace.dependencies]
+pinocchio = { version = "0.11.2", default-features = false }
