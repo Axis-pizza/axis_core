@@ -2,5 +2,43 @@
 
 //! Shared test utility scaffold for Axis Core.
 //!
-//! LiteSVM fixtures and protocol-specific helpers will be added in the
-//! dedicated test scaffold issue.
+//! This crate provides deterministic LiteSVM setup and inspection helpers for
+//! protocol tests. It intentionally does not implement protocol business logic.
+
+pub mod accounts;
+pub mod litesvm;
+pub mod tokens;
+
+use std::path::PathBuf;
+
+use solana_address::Address;
+use thiserror::Error;
+
+pub type Result<T> = std::result::Result<T, AxisTestError>;
+
+#[derive(Debug, Error)]
+pub enum AxisTestError {
+    #[error("LiteSVM account {address:?} was not found")]
+    AccountNotFound { address: Address },
+
+    #[error("{diagnostic}")]
+    MissingProgramArtifact { path: PathBuf, diagnostic: String },
+
+    #[error("{diagnostic}")]
+    InvalidProgramArtifact { path: PathBuf, diagnostic: String },
+
+    #[error("failed to fund deterministic signer {address:?}: {details}")]
+    FundingFailed { address: Address, details: String },
+
+    #[error("invalid SPL Token / Token-2022 account data for {address:?}: {reason}")]
+    InvalidTokenAccountData { address: Address, reason: String },
+}
+
+pub use accounts::{account_data, account_lamports};
+pub use litesvm::{
+    axis_core_program_artifact_path, axis_core_program_id, deterministic_keypair, fresh_vm,
+    load_axis_core_program, load_axis_core_program_from_path, provision_deterministic_payer,
+    provision_funded_signer, workspace_root, FundedTestSigner, ProgramArtifactLoad,
+    AXIS_CORE_PROGRAM_ARTIFACT_ENV, DEFAULT_AXIS_CORE_PROGRAM_ARTIFACT, DEFAULT_PAYER_LAMPORTS,
+};
+pub use tokens::{token_account_balance, token_account_balance_from_data};
